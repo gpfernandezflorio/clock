@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <script src="slider.js"></script>
+    <script src="clock.js"></script>
+
+    <script>
+      let n = 0;
+      const GRANULARIDAD = 1;
+      const MAX_INICIAL = 2;
+      const INTERVALO_INICIAL = 100;
+      const MINIMO_INTERVALO = 10;
+      let slider;
+
+      const inicializar = function() {
+        CLOCK.crear(INTERVALO_INICIAL, MINIMO_INTERVALO, GRANULARIDAD);
+        slider = SLIDER.nuevo({
+          placeholderId: 'sliderPlaceholder',
+          valorInicial: CLOCK.ESCALA,
+          maximoInicial: MAX_INICIAL * CLOCK.ESCALA,
+          maximoMaximo: INTERVALO_INICIAL * CLOCK.ESCALA,
+          paso: CLOCK.ESCALA,
+          funcion: cambiarVelocidad
+        });
+      };
+
+      const comenzar = function() {
+        CLOCK.iniciar(function() {
+          n++;
+          document.getElementById('contador').innerHTML = n;
+        })
+      };
+
+      const detener = function() {
+        CLOCK.detener();
+      };
+
+      const reiniciarVelocidad = function() {
+        slider.reiniciar();
+      };
+
+      const reiniciarContador = function() {
+        n = 0;
+        document.getElementById('contador').innerHTML = 0;
+      };
+
+      const cambiarVelocidad = function(valor) {
+        let indicador = Math.floor(valor);
+        CLOCK.setearVelocidad(indicador);
+        let frecuencia = CLOCK.velocidad.intervalo;
+        document.getElementById('freq').innerHTML = frecuencia;
+        let pulsosPorTick = CLOCK.velocidad.pulsosPorTick;
+        document.getElementById('ppt').innerHTML = pulsosPorTick;
+        let ppsEsperados = (indicador*1000/CLOCK.ESCALA) / INTERVALO_INICIAL;
+        document.getElementById('ppsE').innerHTML = ppsEsperados;
+        let ppsObtenidos = pulsosPorTick*1000 / frecuencia;
+        if (!Number.isInteger(ppsObtenidos)) { ppsObtenidos = ppsObtenidos.toFixed(GRANULARIDAD); }
+        document.getElementById('ppsO').innerHTML = ppsObtenidos;
+        let ticksPorSegundo = 1000 / frecuencia;
+        if (!Number.isInteger(ticksPorSegundo)) { ticksPorSegundo = ticksPorSegundo.toFixed(GRANULARIDAD); }
+        document.getElementById('tps').innerHTML = ticksPorSegundo;
+        let diferencia = ppsEsperados - ppsObtenidos;
+        if (!Number.isInteger(diferencia)) { diferencia = diferencia.toFixed(GRANULARIDAD); }
+        document.getElementById('diff').innerHTML = diferencia;
+      };
+
+      window.addEventListener('load', inicializar);
+    </script>
+  </head>
+  <body>
+    <button onclick="comenzar();">Comenzar</button>
+    <button onclick="detener();">Detener</button>
+
+    <br><br>
+
+    Velocidad:
+    x<span id="sliderPlaceholder"></span>
+    <button onclick="reiniciarVelocidad();">Reiniciar</button>
+
+    <br><br>
+
+    Contador: <span id="contador">0</span>
+    <button onclick="reiniciarContador();">Reiniciar</button>
+
+    <br><br>
+
+    Pulsos por segundo
+    <br>
+    Esperados: <span id="ppsE"></span>
+    <br>
+    Obtenidos: <span id="ppsO"></span>
+    <br>
+    Diferencia: <span id="diff"></span>
+
+    <br><br>
+
+    Pulsos por tick: <span id="ppt"></span>
+    <br>
+    Frecuencia ticks: <span id="freq"></span>ms
+    <br>
+    Ticks por segundo: <span id="tps"></span>
+  </body>
+</html>
