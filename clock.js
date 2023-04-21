@@ -163,6 +163,6 @@ CLOCK.setearVelocidad = function(indicador) {
 /**@tick**/
 CLOCK.tick = function() {
   for (let pulso = 0; pulso < CLOCK.velocidad.pulsosPorTick; pulso++) {
-    CLOCK.funcion();
+    if ('funcion' in CLOCK) { CLOCK.funcion(); }
   }
 };
